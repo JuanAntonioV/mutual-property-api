@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Repository\User;
+
+use App\Traits\RepoTrait;
+use Illuminate\Support\Facades\DB;
+
+class UserRepo implements UserRepoInterface
+{
+    use RepoTrait;
+
+    public static function getUserProfileById($userId): object
+    {
+        return self::getDbTable()
+            ->join('user_details', 'users.id', '=', 'user_details.user_id')
+            ->where('users.id', $userId)
+            ->select(
+                'users.email',
+                'users.email_verified_at',
+                'users.status',
+                'user_details.full_name',
+                'user_details.phone_number'
+            )->first();
+    }
+
+    private static function getDbTable(): object
+    {
+        return DB::table('users');
+    }
+
+    public static function getUserIdByEmail($email): int
+    {
+        return self::getDbTable()
+            ->where('email', $email)
+            ->value('id');
+    }
+}
