@@ -43,15 +43,11 @@ class UserRepo implements UserRepoInterface
             ->update(['password' => Hash::make($password)]);
     }
 
-    public static function updateUserProfile(int $userId, string $email, string $fullName, string $phoneNumber): bool
+    public static function updateUserProfile($userId, $data): bool
     {
         return self::getDbTable()
             ->join('user_details', 'users.id', '=', 'user_details.user_id')
             ->where('users.id', $userId)
-            ->update([
-                'users.email' => $email,
-                'user_details.full_name' => $fullName,
-                'user_details.phone_number' => $phoneNumber
-            ]);
+            ->update($data);
     }
 }

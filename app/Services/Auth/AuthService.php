@@ -48,6 +48,21 @@ class AuthService implements AuthServiceInterface
             $email = $request->input('email');
             $password = $request->input('password');
 
+            $phoneBeginString = substr($phoneNumber, 0, 2);
+
+            if ($phoneBeginString != '08' && $phoneBeginString != '62') return
+                ResponseHelper::error('Nomor telepon tidak valid',
+                    null, 400);
+
+            if ($phoneBeginString == '62') {
+                $phoneNumber = '08' . substr($phoneNumber, 2);
+            }
+
+            $isPhoneNumberRegistered = $this->authRepo->isPhoneNumberRegistered($phoneNumber);
+
+            if ($isPhoneNumberRegistered) return ResponseHelper::error('Nomor telepon sudah terdaftar',
+                null, 400);
+
             $user = $this->authRepo->register($fullName, $phoneNumber, $email, $password);
 
             if (!$user) return ResponseHelper::error('Gagal mendaftarkan akun', null, 500);
@@ -106,20 +121,20 @@ class AuthService implements AuthServiceInterface
 
     private static function generateAuthToken(int $userId): string
     {
-        return User::where('id', $userId)->first()->createToken('authToken')->accessToken;
+        return User::where('id', $userId)->first()->createToken('authToken')->plainTextToken;
     }
 
     public function logout($request): array
     {
         DB::beginTransaction();
         try {
-            $user = $request->user();
+            $userId = $request->user()->id;
             $token = $request->bearerToken();
 
-            $user->token()->revoke();
+            $request->user()->currentAccessToken()->delete();
 
             // update access log
-            $this->accessLogRepo->updateLogoutLog($user->id, $token);
+            $this->accessLogRepo->updateLogoutLog($userId, $token);
 
             DB::commit();
             return ResponseHelper::success(null, 'Berhasil logout');

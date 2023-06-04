@@ -46,4 +46,11 @@ class AuthRepo implements AuthRepoInterface
                 'users.status'
             )->first();
     }
+
+    public static function isPhoneNumberRegistered($phoneNumber): bool
+    {
+        return DB::table('user_details')
+            ->where('phone_number', $phoneNumber)
+            ->exists();
+    }
 }

@@ -14,9 +14,9 @@ class UserValidator
     public function validateUpdateUserProfile($request)
     {
         $rules = [
-            'email' => 'required|email|unique:users,email',
-            'full_name' => 'required|string|min:3|max:255',
-            'phone_number' => 'required|string|max:16',
+            'email' => 'nullable|email|unique:users,email',
+            'full_name' => 'nullable|string|min:3|max:255',
+            'phone_number' => 'nullable|string|max:16',
         ];
 
         $validator = Validator::make($request->all(), $rules, $this->messages);
