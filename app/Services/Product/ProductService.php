@@ -28,4 +28,24 @@ class ProductService implements ProductServiceInterface
             return ResponseHelper::serverError($e->getMessage());
         }
     }
+
+    public function getAllProducts($request): array
+    {
+        try {
+            $category = $request->input('category');
+            $subCategory = $request->input('type');
+            $order = $request->input('order');
+            $search = $request->input('search');
+
+            $products = $this->productRepo->getAllProducts($category, $subCategory, $order, $search);
+
+            if (!$products) {
+                return ResponseHelper::notFound('Tidak ada produk');
+            }
+
+            return ResponseHelper::success($products);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError($e->getMessage());
+        }
+    }
 }

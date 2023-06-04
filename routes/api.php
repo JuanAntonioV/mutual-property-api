@@ -40,5 +40,6 @@ Route::prefix('v1')->group(function () {
         Route::patch('/profile', [UserController::class, 'updateUserProfile']);
     });
 
-    Route::get('new-products', [ProductController::class, 'getNewProductPosts']);
+    Route::get('newest-products', [ProductController::class, 'getNewProductPosts']);
+    Route::get('products', [ProductController::class, 'getAllProducts']);
 });
