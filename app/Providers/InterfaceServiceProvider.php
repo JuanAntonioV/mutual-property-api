@@ -31,6 +31,11 @@ class InterfaceServiceProvider extends ServiceProvider
             \App\Services\User\UserService::class
         );
 
+        $this->app->bind(
+            \App\Services\Product\ProductServiceInterface::class,
+            \App\Services\Product\ProductService::class
+        );
+
         // ------------------ Registering Repository ------------------
         // ------------------------------------------------------------
 
@@ -52,6 +57,11 @@ class InterfaceServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Repository\PasswordReset\PasswordResetRepoInterface::class,
             \App\Repository\PasswordReset\PasswordResetRepo::class,
+        );
+
+        $this->app->bind(
+            \App\Repository\Product\ProductRepoInterface::class,
+            \App\Repository\Product\ProductRepo::class,
         );
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Products\ProductController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -38,4 +39,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/profile', [UserController::class, 'getUserProfile']);
         Route::patch('/profile', [UserController::class, 'updateUserProfile']);
     });
+
+    Route::get('new-products', [ProductController::class, 'getNewProductPosts']);
 });
