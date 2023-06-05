@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->integer('area')->nullable();
             $table->string('price_list_image')->nullable();
             $table->string('side_plan_image')->nullable();
+            $table->string('brochure_file')->nullable();
             $table->boolean('status')->default(true);
             $table->primary(['product_id', 'developer_id']);
             $table->timestamps();

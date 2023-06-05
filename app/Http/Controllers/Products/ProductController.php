@@ -16,15 +16,33 @@ class ProductController extends Controller
         $this->productService = $productService;
     }
 
-    public function getNewProductPosts(): JsonResponse
+    public function getNewProductPosts(Request $request): JsonResponse
     {
-        $data = $this->productService->getNewestProductPosts();
+        $data = $this->productService->getNewestProductPosts($request);
         return response()->json($data, $data['code']);
     }
 
     public function getAllProducts(Request $request): JsonResponse
     {
         $data = $this->productService->getAllProducts($request);
+        return response()->json($data, $data['code']);
+    }
+
+    public function getDeveloperProducts(Request $request): JsonResponse
+    {
+        $data = $this->productService->getDeveloperProducts($request);
+        return response()->json($data, $data['code']);
+    }
+
+    public function getProductDetails(Request $request, string $slug): JsonResponse
+    {
+        $data = $this->productService->getProductDetails($request, $slug);
+        return response()->json($data, $data['code']);
+    }
+
+    public function searchProduct(Request $request): JsonResponse
+    {
+        $data = $this->productService->searchProduct($request);
         return response()->json($data, $data['code']);
     }
 }

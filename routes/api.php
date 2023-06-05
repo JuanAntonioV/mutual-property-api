@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Category\CategoriesController;
 use App\Http\Controllers\Products\ProductController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\WelcomeController;
@@ -40,6 +41,9 @@ Route::prefix('v1')->group(function () {
         Route::patch('/profile', [UserController::class, 'updateUserProfile']);
     });
 
+    Route::get('search', [ProductController::class, 'searchProduct']);
     Route::get('newest-products', [ProductController::class, 'getNewProductPosts']);
     Route::get('products', [ProductController::class, 'getAllProducts']);
+    Route::get('developer-products', [ProductController::class, 'getDeveloperProducts']);
+    Route::get('products/{slug}', [ProductController::class, 'getProductDetails']);
 });

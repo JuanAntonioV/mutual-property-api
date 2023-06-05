@@ -13,6 +13,7 @@ class Staff extends Model
     protected $table = 'staffs';
 
     protected $fillable = [
+        'photo',
         'username',
         'password',
         'email',

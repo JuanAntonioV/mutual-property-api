@@ -17,7 +17,6 @@ return new class extends Migration {
             $table->string('phone_number')->nullable();
             $table->string('whatsapp_number')->nullable();
             $table->string('email')->nullable();
-            $table->string('brochure')->nullable();
             $table->boolean('status')->default(1);
             $table->timestamps();
         });
