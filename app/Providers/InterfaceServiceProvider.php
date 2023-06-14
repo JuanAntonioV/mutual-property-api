@@ -36,6 +36,21 @@ class InterfaceServiceProvider extends ServiceProvider
             \App\Services\Product\ProductService::class
         );
 
+        $this->app->bind(
+            \App\Services\Admin\Auth\AdminAuthServiceInterface::class,
+            \App\Services\Admin\Auth\AdminAuthService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Admin\AdminServiceInterface::class,
+            \App\Services\Admin\AdminService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Admin\Product\AdminProductServiceInterface::class,
+            \App\Services\Admin\Product\AdminProductService::class
+        );
+
         // ------------------ Registering Repository ------------------
         // ------------------------------------------------------------
 
@@ -62,6 +77,11 @@ class InterfaceServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Repository\Product\ProductRepoInterface::class,
             \App\Repository\Product\ProductRepo::class,
+        );
+
+        $this->app->bind(
+            \App\Repository\Admin\Auth\AdminAuthRepoInterface::class,
+            \App\Repository\Admin\Auth\AdminAuthRepo::class,
         );
     }
 }

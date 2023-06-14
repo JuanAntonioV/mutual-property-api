@@ -2,7 +2,9 @@
 
 namespace App\Models\Products;
 
+use App\Models\Category\Category;
 use App\Models\Developers\Developer;
+use App\Models\SubCategory\SubCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -39,9 +41,19 @@ class Product extends Model
         return $this->hasMany(ProductFacility::class);
     }
 
-    public function image(): HasMany
+    public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function category(): HasOne
+    {
+        return $this->hasOne(Category::class);
+    }
+
+    public function subCategory(): HasOne
+    {
+        return $this->hasOne(SubCategory::class);
     }
 
     public function developer(): BelongsToMany

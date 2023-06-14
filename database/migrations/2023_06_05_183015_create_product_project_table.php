@@ -10,10 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('product_developers', function (Blueprint $table) {
+        Schema::create('product_project', function (Blueprint $table) {
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            $table->foreignId('developer_id')->constrained('developers')->cascadeOnDelete();
-            $table->primary(['product_id', 'developer_id']);
+            $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
+            $table->primary(['product_id', 'project_id']);
             $table->timestamps();
         });
     }
@@ -23,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_developers');
+        Schema::dropIfExists('product_project');
     }
 };

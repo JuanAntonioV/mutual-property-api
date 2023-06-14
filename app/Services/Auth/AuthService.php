@@ -11,9 +11,13 @@ use App\Repository\Auth\AuthRepoInterface;
 use App\Repository\PasswordReset\PasswordResetRepoInterface;
 use App\Repository\User\UserRepoInterface;
 use App\Validators\AuthValidator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 
 class AuthService implements AuthServiceInterface
 {
@@ -24,9 +28,13 @@ class AuthService implements AuthServiceInterface
     protected UserRepoInterface $userRepo;
     protected PasswordResetRepoInterface $passwordResetRepo;
 
-    public function __construct(AuthRepoInterface          $authRepo, AuthValidator $authValidator,
-                                AccessLogRepoInterface     $accessLogRepo, UserRepoInterface $userRepo,
-                                PasswordResetRepoInterface $passwordResetRepo)
+    public function __construct(
+        AuthRepoInterface          $authRepo,
+        AuthValidator              $authValidator,
+        AccessLogRepoInterface     $accessLogRepo,
+        UserRepoInterface          $userRepo,
+        PasswordResetRepoInterface $passwordResetRepo
+    )
     {
         $this->authRepo = $authRepo;
         $this->authValidator = $authValidator;
@@ -48,31 +56,35 @@ class AuthService implements AuthServiceInterface
             $email = $request->input('email');
             $password = $request->input('password');
 
-            $phoneBeginString = substr($phoneNumber, 0, 2);
+            $phoneFormatted = self::getFormattedPhone($phoneNumber);
 
-            if ($phoneBeginString != '08' && $phoneBeginString != '62') return
-                ResponseHelper::error('Nomor telepon tidak valid',
-                    null, 400);
-
-            if ($phoneBeginString == '62') {
-                $phoneNumber = '08' . substr($phoneNumber, 2);
-            }
-
-            $isPhoneNumberRegistered = $this->authRepo->isPhoneNumberRegistered($phoneNumber);
+            $isPhoneNumberRegistered = $this->authRepo->isPhoneNumberRegistered($phoneFormatted);
 
             if ($isPhoneNumberRegistered) return ResponseHelper::error('Nomor telepon sudah terdaftar',
                 null, 400);
 
-            $user = $this->authRepo->register($fullName, $phoneNumber, $email, $password);
+            $user = $this->authRepo->register($fullName, $phoneFormatted, $email, $password);
 
             if (!$user) return ResponseHelper::error('Gagal mendaftarkan akun', null, 500);
 
             DB::commit();
             return ResponseHelper::success(null, 'Berhasil mendaftarkan akun');
+        } catch (NumberParseException $e) {
+            return ResponseHelper::error("Nomor handphone tidak valid");
         } catch (\Exception $e) {
             DB::rollBack();
             return ResponseHelper::serverError($e->getMessage());
         }
+    }
+
+    /**
+     * @throws NumberParseException
+     */
+    public static function getFormattedPhone(string $phoneNumber): string
+    {
+        $phoneNumberUtil = PhoneNumberUtil::getInstance();
+        $phoneNumberObject = $phoneNumberUtil->parse($phoneNumber, 'ID');
+        return $phoneNumberUtil->format($phoneNumberObject, PhoneNumberFormat::E164);
     }
 
     public function login($request): array
@@ -144,21 +156,6 @@ class AuthService implements AuthServiceInterface
         }
     }
 
-    public function me($request): array
-    {
-        try {
-            $userId = $request->user()->id;
-
-            $user = $this->userRepo->getUserProfileById($userId);
-
-            if (!$user && !$userId) return ResponseHelper::error('User tidak ditemukan', null, 404);
-
-            return ResponseHelper::success($user, 'Berhasil mengambil data user');
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError($e->getMessage());
-        }
-    }
-
     public function forgotPassword($request): array
     {
         $validator = $this->authValidator->validateForgotPassword($request);
@@ -226,11 +223,43 @@ class AuthService implements AuthServiceInterface
                 return ResponseHelper::error('Token tidak valid', null, 401);
             }
 
-            $passwordEncrypted = md5($password);
+            $passwordEncrypted = Hash::make($password);
 
             $this->passwordResetRepo->changePasswordByUserId($userId, $passwordEncrypted);
 
             $this->passwordResetRepo->updateRememberToken($userId, $token);
+
+            DB::commit();
+            return ResponseHelper::success(null, 'Berhasil merubah password');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError($e->getMessage());
+        }
+    }
+
+    public function changePassword(Request $request): array
+    {
+        $validator = $this->authValidator->validateChangePassword($request);
+
+        if ($validator) return $validator;
+
+        DB::beginTransaction();
+        try {
+            $oldPassword = $request->input('old_password');
+            $newPassword = $request->input('new_password');
+
+            $userId = $request->user()->id;
+            $userEmail = $request->user()->email;
+
+            $user = $this->authRepo->getUserCredentialByEmail($userEmail);
+
+            if (!$user) return ResponseHelper::notFound('User tidak ditemukan');
+
+            if (!Hash::check($oldPassword, $user->password)) return ResponseHelper::error('Password lama tidak sesuai', null, 401);
+
+            if ($oldPassword === $newPassword) return ResponseHelper::error('Password baru tidak boleh sama dengan password lama', null, 401);
+
+            $this->userRepo->updateUserPassword($userId, $newPassword);
 
             DB::commit();
             return ResponseHelper::success(null, 'Berhasil merubah password');

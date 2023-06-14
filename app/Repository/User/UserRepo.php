@@ -40,7 +40,10 @@ class UserRepo implements UserRepoInterface
     {
         return self::getDbTable()
             ->where('id', $userId)
-            ->update(['password' => Hash::make($password)]);
+            ->update([
+                'password' => Hash::make($password),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
     }
 
     public static function updateUserProfile($userId, $data): bool

@@ -34,12 +34,6 @@ class AuthController extends Controller
         return response()->json($data, $data['code']);
     }
 
-    public function me(Request $request): JsonResponse
-    {
-        $data = $this->authService->me($request);
-        return response()->json($data, $data['code']);
-    }
-
     public function forgotPassword(Request $request): JsonResponse
     {
         $data = $this->authService->forgotPassword($request);
@@ -49,6 +43,12 @@ class AuthController extends Controller
     public function resetPassword(Request $request): JsonResponse
     {
         $data = $this->authService->resetPassword($request);
+        return response()->json($data, $data['code']);
+    }
+
+    public function changePassword(Request $request): JsonResponse
+    {
+        $data = $this->authService->changePassword($request);
         return response()->json($data, $data['code']);
     }
 }

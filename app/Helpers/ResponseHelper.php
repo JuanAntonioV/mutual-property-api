@@ -12,12 +12,11 @@ class ResponseHelper
     {
         $res = [
             'code' => $code,
-            'status' => true,
             'message' => $message,
         ];
 
         if ($data) {
-            $res['data'] = $data;
+            $res['results'] = $data;
         }
 
         return $res;
@@ -28,7 +27,6 @@ class ResponseHelper
     {
         $res = [
             'code' => $code,
-            'status' => false,
             'message' => $message,
         ];
 
@@ -43,8 +41,8 @@ class ResponseHelper
     {
         return [
             'code' => $code,
-            'status' => true,
             'message' => $message,
+            'results' => [],
         ];
     }
 
@@ -53,7 +51,6 @@ class ResponseHelper
     {
         return [
             'code' => $code,
-            'status' => false,
             'message' => $message,
             'error' => $error,
         ];

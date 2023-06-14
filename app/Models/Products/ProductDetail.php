@@ -27,6 +27,7 @@ class ProductDetail extends Model
         'building_direction',
         'electricity_capacity',
         'water_source',
+        'floor_plan_image',
     ];
 
     public function product(): BelongsTo

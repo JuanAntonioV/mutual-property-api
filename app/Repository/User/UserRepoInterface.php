@@ -11,4 +11,5 @@ interface UserRepoInterface
     public static function updateUserProfile(int $userId, array $data): bool;
 
     public static function updateUserPassword(int $userId, string $password): bool;
+
 }
