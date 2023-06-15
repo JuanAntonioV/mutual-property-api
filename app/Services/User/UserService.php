@@ -69,9 +69,7 @@ class UserService implements UserServiceInterface
                 'phone_number' => $phoneNumber ?? $prevUserData->phone_number,
             ];
 
-            $user = $this->userRepo->updateUserProfile($userId, $data);
-
-            if (!$user) return ResponseHelper::error('Gagal merubah user profile', null, 500);
+            $this->userRepo->updateUserProfile($userId, $data);
 
             DB::commit();
             return ResponseHelper::success(null, 'Berhasil merubah user profile');
