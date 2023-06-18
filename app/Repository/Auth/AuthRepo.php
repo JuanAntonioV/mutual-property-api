@@ -33,7 +33,7 @@ class AuthRepo implements AuthRepoInterface
         return DB::table('users');
     }
 
-    public static function getUserCredentialByEmail($email): object
+    public static function getUserCredentialByEmail($email): object|null
     {
         return self::getDbTable()
             ->join('user_details', 'user_details.user_id', 'users.id')

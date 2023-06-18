@@ -37,7 +37,7 @@ class ResponseHelper
         return $res;
     }
 
-    public static function notFound($message = null, $code = ResponseAlias::HTTP_NOT_FOUND): array
+    public static function notFound($message = null, $code = ResponseAlias::HTTP_OK): array
     {
         return [
             'code' => $code,

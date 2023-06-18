@@ -51,6 +51,21 @@ class InterfaceServiceProvider extends ServiceProvider
             \App\Services\Admin\Product\AdminProductService::class
         );
 
+        $this->app->bind(
+            \App\Services\Admin\Analytics\AdminAnalyticsServiceInterface::class,
+            \App\Services\Admin\Analytics\AdminAnalyticsService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Contacts\ContactServiceInterface::class,
+            \App\Services\Contacts\ContactService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Subscriptions\SubscriptionServiceInterface::class,
+            \App\Services\Subscriptions\SubscriptionService::class
+        );
+
         // ------------------ Registering Repository ------------------
         // ------------------------------------------------------------
 
@@ -82,6 +97,16 @@ class InterfaceServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Repository\Admin\Auth\AdminAuthRepoInterface::class,
             \App\Repository\Admin\Auth\AdminAuthRepo::class,
+        );
+
+        $this->app->bind(
+            \App\Repository\Contacts\ContactRepoInterface::class,
+            \App\Repository\Contacts\ContactRepo::class,
+        );
+
+        $this->app->bind(
+            \App\Repository\Subscriptions\SubscriptionRepoInterface::class,
+            \App\Repository\Subscriptions\SubscriptionRepo::class,
         );
     }
 }

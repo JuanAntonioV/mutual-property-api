@@ -30,6 +30,25 @@ class AuthValidator
         return false;
     }
 
+    public function validateAdminLogin($request)
+    {
+        $rules = [
+            'username' => 'required|string|exists:staffs,username',
+            'password' => 'required|string|min:6'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $this->messages);
+
+        if ($validator->fails()) {
+            return ResponseHelper::error(
+                $validator->errors()->first(),
+                $validator->errors(),
+                ResponseAlias::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return false;
+    }
+
     public function validateRegister($request)
     {
         $rules = [
@@ -54,7 +73,7 @@ class AuthValidator
     public function validateForgotPassword($request)
     {
         $rules = [
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|email',
         ];
 
         $validator = Validator::make($request->all(), $rules, $this->messages);
@@ -91,7 +110,7 @@ class AuthValidator
     public function validateUpdateAdminProfile($request)
     {
         $rules = [
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'full_name' => 'nullable|string|min:3|max:50',
             'phone_number' => 'nullable|string|min:10|max:16',
             'recruitment_date' => 'nullable|date_format:Y-m-d',
@@ -115,7 +134,7 @@ class AuthValidator
     public function validateCreateAdmin($request)
     {
         $rules = [
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'photo' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'full_name' => 'required|string|min:3|max:50',
             'phone_number' => 'required|string|min:10|max:16',
             'recruitment_date' => 'required|date_format:Y-m-d',

@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin;
 
+use App\Helpers\FileHelper;
 use App\Helpers\ResponseHelper;
 use App\Models\Staffs\Staff;
 use App\Validators\AuthValidator;
@@ -22,10 +23,14 @@ class AdminService implements AdminServiceInterface
     public function getAllAdmins(): array
     {
         try {
-            $admins = Staff::all();
+            $admins = Staff::all()->load('detail');
 
             if (!$admins) {
                 return ResponseHelper::notFound('Admin tidak ditemukan');
+            }
+
+            foreach ($admins as $admin) {
+                $admin->photo = FileHelper::getFileUrl($admin->photo);
             }
 
             return ResponseHelper::success($admins);

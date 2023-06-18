@@ -167,7 +167,7 @@ class AuthService implements AuthServiceInterface
             $email = $request->input('email');
             $userCredential = $this->authRepo->getUserCredentialByEmail($email);
 
-            if (!$userCredential) return ResponseHelper::error('Email atau password salah', null, 401);
+            if (!$userCredential) return ResponseHelper::error('Maaf, email tidak terdaftar', null, 401);
 
             // check status
             if ($userCredential->status != UserEntities::STATUS_ACTIVE)

@@ -8,7 +8,12 @@ class AdminAuthRepo implements AdminAuthRepoInterface
 {
     public function getStaffCredentialByUsername(string $username)
     {
-        return Staff::where('username', $username)->firstOrFail();
+        return Staff::where('username', $username)->first();
+    }
+
+    public function getStaffCredentialByEmail(string $email)
+    {
+        return Staff::where('email', $email)->first();
     }
 
     public function getStaffProfileById(int $staffId)

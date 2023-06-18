@@ -3,12 +3,14 @@
 namespace App\Models\Staffs;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Staff extends Model
+class Staff extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'staffs';
 
@@ -25,10 +27,12 @@ class Staff extends Model
     protected $hidden = [
         'password',
         'remember_token',
+        'created_at',
+        'updated_at',
     ];
 
     public function detail(): HasOne
     {
-        return $this->hasOne(StaffDetail::class);
+        return $this->hasOne(StaffDetail::class, 'staff_id');
     }
 }

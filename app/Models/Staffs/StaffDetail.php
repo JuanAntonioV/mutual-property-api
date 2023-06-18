@@ -12,6 +12,8 @@ class StaffDetail extends Model
 
     protected $table = 'staff_details';
 
+    protected $primaryKey = 'staff_id';
+
     protected $fillable = [
         'user_id',
         'full_name',
@@ -20,8 +22,13 @@ class StaffDetail extends Model
         'phone_number',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function staff(): BelongsTo
     {
-        return $this->belongsTo(Staff::class);
+        return $this->belongsTo(Staff::class, 'staff_id');
     }
 }

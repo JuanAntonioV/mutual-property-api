@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\Analytics\AdminAnalyticsController;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
+use App\Http\Controllers\Admin\Contacts\AdminContactController;
 use App\Http\Controllers\Admin\Developer\AdminDeveloperController;
 use App\Http\Controllers\Admin\Product\AdminProductController;
+use App\Http\Controllers\Admin\Subscriptions\AdminSubcriptionController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Products\ProductController;
 use App\Http\Controllers\Users\UserController;
@@ -51,7 +54,7 @@ Route::prefix('v1')->group(function () {
     Route::get('developer-products', [ProductController::class, 'getDeveloperProducts']);
     Route::get('products/{slug}', [ProductController::class, 'getProductDetails']);
 
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->group(callback: function () {
         Route::prefix('auth')->group(function () {
             Route::post('login', [AdminAuthController::class, 'login']);
 
@@ -66,10 +69,14 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('auth:sanctum')->group(function () {
             Route::get('profile', [AdminAuthController::class, 'getAdminProfile']);
-            Route::patch('profile', [AdminAuthController::class, 'updateAdminProfile']);
+            Route::post('profile', [AdminAuthController::class, 'updateAdminProfile']);
 
             Route::post('change-password', [AdminAuthController::class, 'changePassword']);
         });
+
+        Route::get('/stats', [AdminAnalyticsController::class, 'getStats']);
+        Route::get('/contacts', [AdminContactController::class, 'getAllContacts']);
+        Route::get('/subscriptions', [AdminSubcriptionController::class, 'getAllSubscriptions']);
 
         Route::get('/', [AdminController::class, 'getAllAdmins']);
         Route::get('/{id}', [AdminController::class, 'getAdminDetails']);
