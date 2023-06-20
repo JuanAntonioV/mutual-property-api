@@ -11,6 +11,7 @@ class ProjectDetail extends Model
     use HasFactory;
 
     protected $table = 'project_details';
+    protected $primaryKey = 'project_id';
 
     protected $fillable = [
         'project_id',
@@ -24,6 +25,6 @@ class ProjectDetail extends Model
 
     public function project(): BelongsTo
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class, 'project_id');
     }
 }

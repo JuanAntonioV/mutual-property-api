@@ -19,6 +19,8 @@ class Project extends Model
         'phone_number',
         'whatsapp_number',
         'email',
+        'address',
+        'map_url',
         'status',
     ];
 
@@ -28,6 +30,6 @@ class Project extends Model
 
     public function detail(): HasOne
     {
-        return $this->hasOne(ProjectDetail::class);
+        return $this->hasOne(ProjectDetail::class, 'project_id');
     }
 }

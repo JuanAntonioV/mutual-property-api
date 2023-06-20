@@ -4,8 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Analytics\AdminAnalyticsController;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\Contacts\AdminContactController;
-use App\Http\Controllers\Admin\Developer\AdminDeveloperController;
-use App\Http\Controllers\Admin\Product\AdminProductController;
+use App\Http\Controllers\Admin\Projects\AdminProjectController;
 use App\Http\Controllers\Admin\Subscriptions\AdminSubcriptionController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Products\ProductController;
@@ -82,46 +81,22 @@ Route::prefix('v1')->group(function () {
         Route::get('/contacts', [AdminContactController::class, 'getAllContacts']);
         Route::get('/subscriptions', [AdminSubcriptionController::class, 'getAllSubscriptions']);
 
-        Route::get('/', [AdminController::class, 'getAllAdmins']);
-        Route::get('/{id}', [AdminController::class, 'getAdminDetails']);
-        Route::post('/', [AdminController::class, 'createAdmin']);
-        Route::put('/{id}', [AdminController::class, 'updateAdmin']);
-        Route::put('/{id}/change-password', [AdminController::class, 'changeAdminPassword']);
-        Route::put('/{id}/non-active', [AdminController::class, 'nonActiveAdmin']);
-
-        Route::prefix('products')->group(function () {
-            Route::get('/', [AdminProductController::class, 'getAllProducts']);
-            Route::get('/{id}', [AdminProductController::class, 'getProductDetails']);
-            Route::post('/', [AdminProductController::class, 'createProduct']);
-            Route::patch('/{id}', [AdminProductController::class, 'updateProduct']);
-            Route::delete('/{id}', [AdminProductController::class, 'deleteProduct']);
-
-            Route::prefix('images')->group(function () {
-                Route::post('/{id}', [AdminProductController::class, 'createProductImage']);
-                Route::delete('/{id}', [AdminProductController::class, 'deleteProductImage']);
-            });
+        Route::prefix('super')->group(function () {
+            Route::get('/', [AdminController::class, 'getAllAdmins']);
+            Route::get('/{id}', [AdminController::class, 'getAdminDetails']);
+            Route::post('/', [AdminController::class, 'createAdmin']);
+            Route::put('/{id}', [AdminController::class, 'updateAdmin']);
+            Route::put('/{id}/change-password', [AdminController::class, 'changeAdminPassword']);
+            Route::put('/{id}/non-active', [AdminController::class, 'nonActiveAdmin']);
         });
 
-        Route::prefix('developers')->group(function () {
-            Route::get('/', [AdminDeveloperController::class, 'getAllDevelopers']);
-            Route::get('/{id}', [AdminDeveloperController::class, 'getDeveloperDetails']);
-            Route::post('/', [AdminDeveloperController::class, 'createDeveloper']);
-            Route::patch('/{id}', [AdminDeveloperController::class, 'updateDeveloper']);
-            Route::delete('/{id}', [AdminDeveloperController::class, 'deleteDeveloper']);
-
-            Route::prefix('products')->group(function () {
-                Route::get('/{id}', [AdminDeveloperController::class, 'getDeveloperProducts']);
-                Route::post('/{id}', [AdminDeveloperController::class, 'createDeveloperProduct']);
-                Route::patch('/{id}', [AdminDeveloperController::class, 'updateDeveloperProduct']);
-                Route::delete('/{id}', [AdminDeveloperController::class, 'deleteDeveloperProduct']);
-            });
-
-            Route::prefix('units')->group(function () {
-                Route::get('/{id}', [AdminDeveloperController::class, 'getDeveloperUnits']);
-                Route::post('/{id}', [AdminDeveloperController::class, 'createDeveloperUnit']);
-                Route::patch('/{id}', [AdminDeveloperController::class, 'updateDeveloperUnit']);
-                Route::delete('/{id}', [AdminDeveloperController::class, 'deleteDeveloperUnit']);
-            });
+        Route::prefix('projects')->group(function () {
+            Route::get('/', [AdminProjectController::class, 'getAllProjects']);
+            Route::get('/{id}', [AdminProjectController::class, 'getProjectDetails']);
+            Route::post('/', [AdminProjectController::class, 'createNewProject']);
+            Route::post('/{id}', [AdminProjectController::class, 'updateProject']);
+            Route::delete('/{id}', [AdminProjectController::class, 'deleteProject']);
         });
-    }); // TODO: admin routes
+
+    });
 });

@@ -15,9 +15,12 @@ return new class extends Migration {
             $table->string('name');
             $table->string('slug');
             $table->string('logo')->nullable();
+            $table->string('address')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('whatsapp_number')->nullable();
             $table->string('email')->nullable();
+            $table->string('map_url')->nullable();
+            $table->longText('description')->nullable();
             $table->boolean('status')->default(1);
             $table->timestamps();
         });
