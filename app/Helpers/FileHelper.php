@@ -9,8 +9,13 @@ class FileHelper
 {
     public static function uploadFile($file, $folderName = null, $filePrefix = null): string
     {
-        $defaultFileName = Carbon::now()->timestamp . '-' . $file->getClientOriginalName();
-        $fileName = $filePrefix ? $filePrefix . '.' . $file->getClientOriginalExtension() : $defaultFileName;
+        if (!$filePrefix) {
+            $defaultFileName = Carbon::now()->timestamp . '-' . $file->getClientOriginalName();
+            $fileName = $defaultFileName;
+        } else {
+            $fileName = $filePrefix . '.' . $file->getClientOriginalExtension();
+        }
+
         return $file->storeAs(self::getPath($folderName), $fileName, ['disk' => 'public']);
     }
 
@@ -19,27 +24,24 @@ class FileHelper
         return $folderName;
     }
 
-    public static function getFileUrl(string $filePath): \Illuminate\Foundation\Application|string|\Illuminate\Contracts\Routing\UrlGenerator|\Illuminate\Contracts\Foundation\Application
+    public static function getFileUrl(string|null $filePath)
     {
         return url(Storage::url($filePath));
     }
 
-    public static function downloadFile(string $filePath):
-    bool|\Symfony\Component\HttpFoundation\BinaryFileResponse
+    public static function downloadFile(string $filePath): bool|\Symfony\Component\HttpFoundation\StreamedResponse
     {
-        if (file_exists($filePath)) {
-            return response()->download($filePath);
+        if (Storage::disk('public')->exists($filePath)) {
+            return Storage::disk('public')->download($filePath);
         }
 
         return false;
     }
 
-    public static function deleteFile($folderName, $fileName): bool
+    public static function deleteFile($filePath): bool
     {
-        $filePath = self::getPath($folderName) . $fileName;
-
-        if (file_exists($filePath)) {
-            @unlink($filePath);
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
         }
 
         return true;

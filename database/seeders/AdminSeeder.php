@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Entities\FolderEntities;
 use App\Models\Staffs\Staff;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,7 @@ class AdminSeeder extends Seeder
         $userId = DB::table('staffs')->insertGetId([
             'username' => 'admin',
             'email' => 'admin@email.com',
+            'photo' => FolderEntities::DEFAULT_PROFILE_PICTURE,
             'password' => Hash::make('admin123'),
             'status' => true,
             'is_super' => true,

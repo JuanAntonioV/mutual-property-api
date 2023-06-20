@@ -14,5 +14,6 @@ interface AdminProductServiceInterface
 
     public function createProduct(Request $request): array;
 
-    public function createProductFacility(Request $request): array;
+    public function updateProduct(int $id, Request $request): array;
+
 }

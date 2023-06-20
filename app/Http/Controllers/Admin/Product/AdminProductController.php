@@ -40,9 +40,9 @@ class AdminProductController extends Controller
         return response()->json($data, $data['code']);
     }
 
-    public function createProductFacility(Request $request): JsonResponse
+    public function updateProduct(int $id, Request $request): JsonResponse
     {
-        $data = $this->adminProductService->createProductFacility($request);
+        $data = $this->adminProductService->updateProduct($id, $request);
         return response()->json($data, $data['code']);
     }
 }

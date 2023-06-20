@@ -13,9 +13,8 @@ return new class extends Migration {
     {
         Schema::create('product_facilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products');
+            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->string('facility', 45);
-            $table->string('icon', 45);
             $table->boolean('is_active')->default(ProductEntities::IS_ACTIVE);
             $table->timestamps();
         });

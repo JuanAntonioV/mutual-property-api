@@ -10,8 +10,11 @@ class ProductEntities
     const IS_SOLD = 1;
 
     const IS_NOT_SOLD = 0;
-    
+
     const IS_ACTIVE = 1;
 
     const IS_NOT_ACTIVE = 0;
+
+    const PRODUCT_PROJECT_TYPE = 'productProject';
+    const PRODUCT_TYPE = 'product';
 }

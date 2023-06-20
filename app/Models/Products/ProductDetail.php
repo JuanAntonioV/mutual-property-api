@@ -11,6 +11,7 @@ class ProductDetail extends Model
     use HasFactory;
 
     protected $table = 'product_details';
+    protected $primaryKey = 'product_id';
 
     protected $fillable = [
         'product_id',
@@ -32,6 +33,6 @@ class ProductDetail extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 }

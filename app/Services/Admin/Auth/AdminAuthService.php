@@ -51,6 +51,8 @@ class AdminAuthService implements AdminAuthServiceInterface
 
             $token = $staff->createToken('adminToken')->plainTextToken;
 
+            $staff->photo = FileHelper::getFileUrl($staff->photo);
+
             $data = [
                 'token' => $token,
                 'staff' => $staff

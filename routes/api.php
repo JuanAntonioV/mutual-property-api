@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Analytics\AdminAnalyticsController;
 use App\Http\Controllers\Admin\Auth\AdminAuthController;
 use App\Http\Controllers\Admin\Contacts\AdminContactController;
+use App\Http\Controllers\Admin\Product\AdminProductController;
 use App\Http\Controllers\Admin\Projects\AdminProjectController;
 use App\Http\Controllers\Admin\Subscriptions\AdminSubcriptionController;
 use App\Http\Controllers\Auth\AuthController;
@@ -75,6 +76,14 @@ Route::prefix('v1')->group(function () {
             Route::post('profile', [AdminAuthController::class, 'updateAdminProfile']);
 
             Route::post('change-password', [AdminAuthController::class, 'changePassword']);
+
+            Route::prefix('products')->group(function () {
+                Route::get('/', [AdminProductController::class, 'getAllProducts']);
+                Route::get('/{id}', [AdminProductController::class, 'getProductDetails']);
+                Route::post('/', [AdminProductController::class, 'createProduct']);
+                Route::post('/{id}/update', [AdminProductController::class, 'updateProduct']);
+                Route::delete('/{id}', [AdminProductController::class, 'deleteProduct']);
+            });
         });
 
         Route::get('/stats', [AdminAnalyticsController::class, 'getStats']);
@@ -97,6 +106,5 @@ Route::prefix('v1')->group(function () {
             Route::post('/{id}', [AdminProjectController::class, 'updateProject']);
             Route::delete('/{id}', [AdminProjectController::class, 'deleteProject']);
         });
-
     });
 });

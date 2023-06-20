@@ -8,4 +8,6 @@ class FolderEntities
     const DEFAULT_PROFILE_PICTURE = 'staffs/profile.jpg';
 
     const PROJECT_FOLDER = 'projects/';
+    const PRODUCT_FOLDER = 'products/';
+    const PRODUCT_GALLERY_FOLDER = 'gallery';
 }
