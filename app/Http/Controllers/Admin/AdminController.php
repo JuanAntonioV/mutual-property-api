@@ -39,4 +39,16 @@ class AdminController extends Controller
         $data = $this->adminService->updateAdmin($id, $request);
         return response()->json($data, $data['code']);
     }
+
+    public function nonActiveAdmin(Request $request, int $id): JsonResponse
+    {
+        $data = $this->adminService->toggleAdminStatus($id, $request);
+        return response()->json($data, $data['code']);
+    }
+
+    public function changeAdminPassword(Request $request, int $id): JsonResponse
+    {
+        $data = $this->adminService->changeAdminPassword($id, $request);
+        return response()->json($data, $data['code']);
+    }
 }

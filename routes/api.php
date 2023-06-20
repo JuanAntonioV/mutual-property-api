@@ -54,6 +54,10 @@ Route::prefix('v1')->group(function () {
     Route::get('developer-products', [ProductController::class, 'getDeveloperProducts']);
     Route::get('products/{slug}', [ProductController::class, 'getProductDetails']);
 
+    Route::post('/subscriptions', [AdminSubcriptionController::class, 'createSubscription']);
+
+    Route::post('/contacts', [AdminContactController::class, 'sendNewContact']);
+
     Route::prefix('admin')->group(callback: function () {
         Route::prefix('auth')->group(function () {
             Route::post('login', [AdminAuthController::class, 'login']);
@@ -81,7 +85,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [AdminController::class, 'getAllAdmins']);
         Route::get('/{id}', [AdminController::class, 'getAdminDetails']);
         Route::post('/', [AdminController::class, 'createAdmin']);
-        Route::patch('/{id}', [AdminController::class, 'updateAdmin']);
+        Route::put('/{id}', [AdminController::class, 'updateAdmin']);
+        Route::put('/{id}/change-password', [AdminController::class, 'changeAdminPassword']);
+        Route::put('/{id}/non-active', [AdminController::class, 'nonActiveAdmin']);
 
         Route::prefix('products')->group(function () {
             Route::get('/', [AdminProductController::class, 'getAllProducts']);

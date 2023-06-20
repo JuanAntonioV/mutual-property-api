@@ -13,4 +13,8 @@ interface AdminServiceInterface
     public function createAdmin(Request $request): array;
 
     public function updateAdmin(int $id, Request $request): array;
+
+    public function changeAdminPassword(int $id, Request $request): array;
+
+    public function toggleAdminStatus(int $id, Request $request): array;
 }

@@ -107,16 +107,55 @@ class AuthValidator
         return false;
     }
 
+    public function validateAdminChangePassword($request)
+    {
+        $rules = [
+            'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required|string|min:6|same:password',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $this->messages);
+
+        if ($validator->fails()) {
+            return ResponseHelper::error(
+                $validator->errors()->first(),
+                $validator->errors(),
+                ResponseAlias::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return false;
+    }
+
     public function validateUpdateAdminProfile($request)
     {
         $rules = [
-            'photo' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-            'full_name' => 'nullable|string|min:3|max:50',
-            'phone_number' => 'nullable|string|min:10|max:16',
-            'recruitment_date' => 'nullable|date_format:Y-m-d',
-            'position' => 'nullable|string|min:3|max:50',
-            'status' => 'nullable|boolean',
+            'full_name' => 'required|string|min:3|max:50',
+            'email' => 'required|email|min:3',
+            'username' => 'required|string|min:3|max:50',
+            'phone_number' => 'required|string|min:10|max:16',
+            'recruitment_date' => 'required|date_format:Y-m-d',
+            'position' => 'required|string|min:3|max:50',
+            'status' => 'required|boolean',
             'is_super' => 'nullable|boolean',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $this->messages);
+
+        if ($validator->fails()) {
+            return ResponseHelper::error(
+                $validator->errors()->first(),
+                $validator->errors(),
+                ResponseAlias::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return false;
+    }
+
+
+    public function validateToggleAdminStatus($request)
+    {
+        $rules = [
+            'status' => 'required|boolean',
         ];
 
         $validator = Validator::make($request->all(), $rules, $this->messages);
@@ -134,15 +173,14 @@ class AuthValidator
     public function validateCreateAdmin($request)
     {
         $rules = [
-            'photo' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'full_name' => 'required|string|min:3|max:50',
+            'username' => 'required|string|min:3|max:50',
             'phone_number' => 'required|string|min:10|max:16',
             'recruitment_date' => 'required|date_format:Y-m-d',
             'position' => 'required|string|min:3|max:50',
-            'status' => 'required|boolean',
-            'is_super' => 'required|boolean',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:6|confirmed',
+            'password_confirmation' => 'required|string|min:6|same:password',
         ];
 
         $validator = Validator::make($request->all(), $rules, $this->messages);

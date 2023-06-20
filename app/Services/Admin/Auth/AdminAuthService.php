@@ -30,13 +30,6 @@ class AdminAuthService implements AdminAuthServiceInterface
         $this->passwordResetRepo = $passwordResetRepo;
     }
 
-    private static function uploadPhoto($photo)
-    {
-        $photoName = time() . '.' . $photo->getClientOriginalExtension();
-        $photo->move(public_path('profile'), $photoName);
-        return $photoName;
-    }
-
     public function login(Request $request): array
     {
         $validator = $this->authValidator->validateAdminLogin($request);
