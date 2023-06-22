@@ -155,7 +155,7 @@ class AuthValidator
     public function validateToggleAdminStatus($request)
     {
         $rules = [
-            'status' => 'required|boolean',
+            'status' => 'boolean',
         ];
 
         $validator = Validator::make($request->all(), $rules, $this->messages);

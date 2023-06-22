@@ -52,6 +52,8 @@ class AdminService implements AdminServiceInterface
 
             $admin->load('detail');
 
+            $admin->photo = FileHelper::getFileUrl($admin->photo);
+
             return ResponseHelper::success($admin);
         } catch (\Exception $e) {
             return ResponseHelper::serverError($e->getMessage());
@@ -158,16 +160,16 @@ class AdminService implements AdminServiceInterface
             }
 
             $staffData = [
-                'email' => $email,
-                'username' => $username,
-                'status' => $status,
+                'email' => $email ?? $admin->email,
+                'username' => $username ?? $admin->username,
+                'status' => $status ?? $admin->status,
             ];
 
             $staffDetailData = [
-                'full_name' => $fullName,
-                'recruitment_date' => $recruitmentDate,
-                'position' => $position,
-                'phone_number' => $phoneNumber,
+                'full_name' => $fullName ?? $admin->detail->full_name,
+                'recruitment_date' => $recruitmentDate ?? $admin->detail->recruitment_date,
+                'position' => $position ?? $admin->detail->position,
+                'phone_number' => $phoneNumber ?? $admin->detail->phone_number,
             ];
 
             $admin->update($staffData);
@@ -191,6 +193,7 @@ class AdminService implements AdminServiceInterface
         DB::beginTransaction();
         try {
             $admin = Staff::find($id);
+            $status = $request->input('status');
 
             if (!$admin) {
                 return ResponseHelper::notFound('Admin tidak ditemukan');
@@ -198,8 +201,13 @@ class AdminService implements AdminServiceInterface
 
             $oldAdminStatus = $admin->status;
 
-            $admin->status = !$oldAdminStatus;
-            $admin->save();
+            if ($status) {
+                $admin->status = $status;
+                $admin->save();
+            } else {
+                $admin->status = !$oldAdminStatus;
+                $admin->save();
+            }
 
             DB::commit();
 

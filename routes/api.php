@@ -90,10 +90,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/contacts', [AdminContactController::class, 'getAllContacts']);
         Route::get('/subscriptions', [AdminSubcriptionController::class, 'getAllSubscriptions']);
 
+        Route::get('/', [AdminController::class, 'getAllAdmins']);
+
         Route::prefix('super')->group(function () {
-            Route::get('/', [AdminController::class, 'getAllAdmins']);
-            Route::get('/{id}', [AdminController::class, 'getAdminDetails']);
             Route::post('/', [AdminController::class, 'createAdmin']);
+            Route::get('/{id}', [AdminController::class, 'getAdminDetails']);
             Route::put('/{id}', [AdminController::class, 'updateAdmin']);
             Route::put('/{id}/change-password', [AdminController::class, 'changeAdminPassword']);
             Route::put('/{id}/non-active', [AdminController::class, 'nonActiveAdmin']);
