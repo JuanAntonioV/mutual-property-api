@@ -86,6 +86,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+//            Route::get('/new-posts', [AdminProjectController::class, 'getNewPosts']);
         Route::get('/stats', [AdminAnalyticsController::class, 'getStats']);
         Route::get('/contacts', [AdminContactController::class, 'getAllContacts']);
         Route::get('/subscriptions', [AdminSubcriptionController::class, 'getAllSubscriptions']);
@@ -104,7 +105,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/', [AdminProjectController::class, 'getAllProjects']);
             Route::get('/{id}', [AdminProjectController::class, 'getProjectDetails']);
             Route::post('/', [AdminProjectController::class, 'createNewProject']);
-            Route::post('/{id}', [AdminProjectController::class, 'updateProject']);
+            Route::post('/{id}/update', [AdminProjectController::class, 'updateProject']);
             Route::delete('/{id}', [AdminProjectController::class, 'deleteProject']);
         });
     });

@@ -48,7 +48,7 @@ class ProjectValidator
     {
         $rules = [
             'name' => 'required|string',
-            'logo_image' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'logo_image' => 'max:2048',
             'phone_number' => 'required|string|max:18',
             'whatsapp_number' => 'required|string|max:18',
             'email' => 'required|email|max:255',
@@ -59,9 +59,9 @@ class ProjectValidator
             'area' => 'required|integer',
             'map_url' => 'required|string',
             'facilities' => 'required|string',
-            'brochure_file' => 'nullable|file|mimes:pdf|max:2048',
-            'price_list_image' => 'nullable|file|mimes:jgp,jpeg,png|max:2048',
-            'side_plan_image' => 'nullable|file|mimes:jgp,jpeg,png|max:2048',
+            'brochure_file' => 'max:2048',
+            'price_list_image' => 'max:2048',
+            'side_plan_image' => 'max:2048',
             'description' => 'required|string',
             'status' => 'required|boolean',
         ];

@@ -24,6 +24,8 @@ class Project extends Model
         'address',
         'map_url',
         'status',
+        'description',
+        'started_price',
     ];
 
     protected $casts = [

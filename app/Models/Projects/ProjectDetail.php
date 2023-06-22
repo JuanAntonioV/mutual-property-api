@@ -20,6 +20,8 @@ class ProjectDetail extends Model
         'area',
         'price_list_image',
         'side_plan_image',
+        'brochure_file',
+        'facilities',
         'status',
     ];
 

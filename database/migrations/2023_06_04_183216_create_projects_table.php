@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('email')->nullable();
             $table->string('map_url')->nullable();
             $table->longText('description')->nullable();
+            $table->integer('started_price')->nullable()->default(0);
             $table->boolean('status')->default(1);
             $table->timestamps();
         });

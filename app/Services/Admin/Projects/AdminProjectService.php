@@ -24,7 +24,7 @@ class AdminProjectService implements AdminProjectServiceInterface
     public function getAllProjects(): array
     {
         try {
-            $projects = Project::with('detail:project_id,total_unit')->get();
+            $projects = Project::with('detail:project_id,total_unit')->orderByDesc('created_at')->get();
 
             if ($projects->isEmpty()) {
                 return ResponseHelper::notFound('Tidak ada data project');
@@ -74,6 +74,7 @@ class AdminProjectService implements AdminProjectServiceInterface
             $address = $request->input('address');
             $certificate = $request->input('certificate');
             $totalUnit = $request->input('total_unit');
+            $startedPrice = $request->input('started_price');
             $area = $request->input('area');
             $facilities = $request->input('facilities');
             $mapUrl = $request->input('map_url');
@@ -101,6 +102,7 @@ class AdminProjectService implements AdminProjectServiceInterface
                 'logo' => $logoImage,
                 'email' => $email,
                 'map_url' => $mapUrl,
+                'started_price' => $startedPrice,
                 'description' => $description,
             ];
 
@@ -187,6 +189,7 @@ class AdminProjectService implements AdminProjectServiceInterface
             $address = $request->input('address');
             $certificate = $request->input('certificate');
             $totalUnit = $request->input('total_unit');
+            $startedPrice = $request->input('started_price');
             $area = $request->input('area');
             $facilities = $request->input('facilities');
             $mapUrl = $request->input('map_url');
@@ -242,6 +245,7 @@ class AdminProjectService implements AdminProjectServiceInterface
                 'description' => $description ?? $project->description,
                 'status' => $status ?? $project->status,
                 'logo' => $logoImagePath ?? $project->logo,
+                'started_price' => $startedPrice ?? $project->started_price,
             ];
 
             $projectDetail = [
