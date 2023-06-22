@@ -11,7 +11,7 @@ class ProjectValidator
 {
     private array $messages = ValidationHelper::VALIDATION_MESSAGES;
 
-    public function validateCreateSubscription($request)
+    public function validateCreateProject($request)
     {
         $rules = [
             'name' => 'required|string',

@@ -24,7 +24,7 @@ class AdminProjectService implements AdminProjectServiceInterface
     public function getAllProjects(): array
     {
         try {
-            $projects = Project::all();
+            $projects = Project::with('detail:project_id,total_unit')->get();
 
             if ($projects->isEmpty()) {
                 return ResponseHelper::notFound('Tidak ada data project');
@@ -61,7 +61,7 @@ class AdminProjectService implements AdminProjectServiceInterface
 
     public function createNewProject(Request $request): array
     {
-        $validator = $this->projectValidator->validateCreateSubscription($request);
+        $validator = $this->projectValidator->validateCreateProject($request);
 
         if ($validator) return $validator;
 
