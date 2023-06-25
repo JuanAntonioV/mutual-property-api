@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Product\AdminProductController;
 use App\Http\Controllers\Admin\Projects\AdminProjectController;
 use App\Http\Controllers\Admin\Subscriptions\AdminSubcriptionController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Products\ProductController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\WelcomeController;
@@ -56,6 +57,8 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/subscriptions', [AdminSubcriptionController::class, 'createSubscription']);
 
+    Route::get('categories', [CategoryController::class, 'getAllCategories']);
+
     Route::post('/contacts', [AdminContactController::class, 'sendNewContact']);
 
     Route::prefix('admin')->group(callback: function () {
@@ -82,11 +85,15 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{id}', [AdminProductController::class, 'getProductDetails']);
                 Route::post('/', [AdminProductController::class, 'createProduct']);
                 Route::post('/{id}/update', [AdminProductController::class, 'updateProduct']);
+                Route::delete('/{id}/images/{imageId}', [AdminProductController::class, 'deleteProductImage']);
+                Route::delete('/{id}/facilities/{facilityId}', [AdminProductController::class, 'deleteProductFacility']);
                 Route::delete('/{id}', [AdminProductController::class, 'deleteProduct']);
             });
+            Route::get('/new-posts', [AdminProductController::class, 'getAllNewPosts']);
         });
 
-//            Route::get('/new-posts', [AdminProjectController::class, 'getNewPosts']);
+        Route::get('categories', [CategoryController::class, 'getAllCategories']);
+
         Route::get('/stats', [AdminAnalyticsController::class, 'getStats']);
         Route::get('/contacts', [AdminContactController::class, 'getAllContacts']);
         Route::get('/subscriptions', [AdminSubcriptionController::class, 'getAllSubscriptions']);
@@ -104,6 +111,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('projects')->group(function () {
             Route::get('/', [AdminProjectController::class, 'getAllProjects']);
             Route::get('/{id}', [AdminProjectController::class, 'getProjectDetails']);
+            Route::get('/{id}/products', [AdminProjectController::class, 'getAllProjectProperty']);
             Route::post('/', [AdminProjectController::class, 'createNewProject']);
             Route::post('/{id}/update', [AdminProjectController::class, 'updateProject']);
             Route::delete('/{id}', [AdminProjectController::class, 'deleteProject']);

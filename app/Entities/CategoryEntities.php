@@ -9,7 +9,7 @@ class CategoryEntities
     const IS_NOT_ACTIVE = 0;
 
 
-    const CATEGORY_BARU = 1;
+    const CATEGORY_DISEWA = 1;
     const CATEGORY_DIJUAL = 2;
-    const CATEGORY_DISEWA = 3;
+    const CATEGORY_BARU = 3;
 }

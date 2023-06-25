@@ -71,6 +71,11 @@ class InterfaceServiceProvider extends ServiceProvider
             \App\Services\Admin\Projects\AdminProjectService::class
         );
 
+        $this->app->bind(
+            \App\Services\Category\CategoryServiceInterface::class,
+            \App\Services\Category\CategoryService::class
+        );
+
         // ------------------ Registering Repository ------------------
         // ------------------------------------------------------------
 

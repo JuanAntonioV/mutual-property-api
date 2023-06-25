@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->string('path');
             $table->string('alt')->nullable();
-            $table->boolean('is_active')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

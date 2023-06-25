@@ -24,7 +24,6 @@ return new class extends Migration {
             $table->string('building_condition');
             $table->string('building_direction');
             $table->integer('electricity_capacity');
-            $table->string('water_source');
             $table->string('floor_plan_image')->nullable();
             $table->primary('product_id');
             $table->timestamps();

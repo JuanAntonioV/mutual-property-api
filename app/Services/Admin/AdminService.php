@@ -103,6 +103,12 @@ class AdminService implements AdminServiceInterface
             $email = $request->input('email');
             $password = $request->input('password');
 
+            $usernameExist = Staff::where('username', $username)->first();
+
+            if ($usernameExist) {
+                return ResponseHelper::error('Username sudah digunakan');
+            }
+
             if ($phoneNumber) {
                 $phoneNumber = AuthService::getFormattedPhone($phoneNumber);
             }

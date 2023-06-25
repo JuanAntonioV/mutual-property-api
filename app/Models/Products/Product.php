@@ -5,6 +5,7 @@ namespace App\Models\Products;
 use App\Models\Category\Category;
 use App\Models\Developers\Developer;
 use App\Models\Staffs\Staff;
+use App\Models\Staffs\StaffDetail;
 use App\Models\SubCategory\SubCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,13 +24,12 @@ class Product extends Model
         'staff_id',
         'categories_id',
         'sub_categories_id',
-        'cover_image',
         'title',
         'slug',
         'address',
         'status',
         'price',
-        'map_link',
+        'map_url',
         'is_sold',
     ];
 
@@ -66,5 +66,10 @@ class Product extends Model
     public function project(): BelongsToMany
     {
         return $this->belongsToMany(Developer::class, 'product_project', 'product_id', 'project_id');
+    }
+
+    public function staffDetails(): BelongsTo
+    {
+        return $this->belongsTo(StaffDetail::class, 'staff_id', 'staff_id');
     }
 }

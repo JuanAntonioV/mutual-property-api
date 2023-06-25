@@ -15,7 +15,7 @@ class ProductValidator
     {
         $rules = [
             'type' => 'required|string|min:3',
-            'title' => 'required|string|min:3|unique:products,title',
+            'title' => 'required|string|min:3',
             'category_id' => 'required|integer|exists:categories,id',
             'sub_category_id' => 'required|integer|exists:sub_categories,id',
             'address' => 'required|string|min:3',
@@ -34,13 +34,12 @@ class ProductValidator
             'building_condition' => 'required|string',
             'building_direction' => 'required|string',
             'electricity_capacity' => 'required|integer',
-            'water_source' => 'required|string',
             'project_id' => 'nullable|integer|exists:projects,id',
             'floor_plan_image' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'images.*' => 'required|array',
-            'images.*.*' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'facilities.*' => 'required|array',
-            'facilities.*.*' => 'required|string',
+            'images' => 'required|array',
+            'images.*' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'facilities' => 'required|array',
+            'facilities.*' => 'required|string|distinct',
         ];
 
         $validator = Validator::make($request->all(), $rules, $this->messages);
@@ -78,13 +77,12 @@ class ProductValidator
             'building_condition' => 'required|string',
             'building_direction' => 'required|string',
             'electricity_capacity' => 'required|integer',
-            'water_source' => 'required|string',
             'project_id' => 'nullable|integer|exists:projects,id',
             'floor_plan_image' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'images.*' => 'nullable|array',
-            'images.*.*' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'facilities.*' => 'nullable|array',
-            'facilities.*.*' => 'required|string',
+            'images' => 'nullable|array',
+            'images.*' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'facilities' => 'nullable|array',
+            'facilities.*' => 'required|string|distinct',
         ];
 
         $validator = Validator::make($request->all(), $rules, $this->messages);

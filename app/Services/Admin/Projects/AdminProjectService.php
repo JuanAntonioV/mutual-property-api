@@ -36,6 +36,24 @@ class AdminProjectService implements AdminProjectServiceInterface
         }
     }
 
+    public function getAllProjectProperty(int $id): array
+    {
+        try {
+            $projects = Project::find($id);
+
+            if (!$projects) {
+                return ResponseHelper::notFound('Tidak ada data project');
+            }
+
+            $projects->load('product.category', 'product.subCategory');
+
+            return ResponseHelper::success($projects, 'Berhasil mengambil data project');
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError($e->getMessage());
+        }
+
+    }
+
     public function getProjectDetails(int $id): array
     {
         try {

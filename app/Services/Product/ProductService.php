@@ -3,7 +3,10 @@
 namespace App\Services\Product;
 
 use App\Entities\CategoryEntities;
+use App\Entities\ProductEntities;
+use App\Helpers\FileHelper;
 use App\Helpers\ResponseHelper;
+use App\Models\Products\Product;
 use App\Repository\Product\ProductRepoInterface;
 
 class ProductService implements ProductServiceInterface
@@ -18,9 +21,22 @@ class ProductService implements ProductServiceInterface
     public function getNewestProductPosts($request): array
     {
         try {
-            $products = $this->productRepo->getNewestProductPosts();
+            $products = Product::with('category', 'subCategory', 'detail')
+                ->with(['images' => function ($query) {
+                    $query->where('is_active', 1);
+                }])
+                ->where('status', ProductEntities::STATUS_PUBLISH)
+                ->orderBy('created_at', 'desc')
+                ->limit(8)
+                ->get();
 
             if ($products->isEmpty()) return ResponseHelper::notFound('Tidak ada produk baru');
+
+            foreach ($products as $item) {
+                foreach ($item->images as $image) {
+                    $image->path = FileHelper::getFileUrl($image->path);
+                }
+            }
 
             return ResponseHelper::success($products);
         } catch (\Exception $e) {
@@ -32,16 +48,46 @@ class ProductService implements ProductServiceInterface
     {
         try {
             $categoryId = $request->input('category');
-            $subCategoryId = $request->input('type');
+            $subCategoryId = $request->input('sub_category');
             $order = $request->input('order');
             $search = $request->input('search');
 
-            $products = $this->productRepo->getAllProducts($categoryId, $subCategoryId, $order, $search);
+            $products = Product::with('category', 'subCategory', 'detail')
+                ->with(['images' => function ($query) {
+                    $query->where('is_active', 1);
+                }])
+                ->where('status', ProductEntities::STATUS_PUBLISH)
+                ->when($categoryId, function ($query, $categoryId) {
+                    return $query->where('categories_id', $categoryId);
+                })
+                ->when($subCategoryId, function ($query, $subCategoryId) {
+                    return $query->where('sub_categories_id', $subCategoryId);
+                })
+                ->when($search, function ($query, $search) {
+                    return $query->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('address', 'like', '%' . $search . '%');
+                })
+                ->when($order, function ($query, $order) {
+                    if ($order == 'terbaru') {
+                        return $query->orderBy('created_at', 'desc');
+                    } elseif ($order == 'terlama') {
+                        return $query->orderBy('created_at', 'asc');
+                    } elseif ($order == 'termurah') {
+                        return $query->orderBy('price', 'asc');
+                    } elseif ($order == 'termahal') {
+                        return $query->orderBy('price', 'desc');
+                    } else {
+                        return $query->orderBy('created_at', 'desc');
+                    }
+                })
+                ->paginate(8);
 
             if ($products->isEmpty()) return ResponseHelper::notFound('Tidak ada produk');
 
             foreach ($products as $item) {
-                $item->gallery = $this->productRepo->getProductGallery($item->id);
+                foreach ($item->images as $image) {
+                    $image->path = FileHelper::getFileUrl($image->path);
+                }
             }
 
             return ResponseHelper::success($products);

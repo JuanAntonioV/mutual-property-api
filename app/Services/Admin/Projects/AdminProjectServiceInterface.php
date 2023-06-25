@@ -12,6 +12,8 @@ interface AdminProjectServiceInterface
 
     public function deleteProject(int $id): array;
 
+    public function getAllProjectProperty(int $id): array;
+
     public function createNewProject(Request $request): array;
 
     public function updateProject(int $id, Request $request): array;

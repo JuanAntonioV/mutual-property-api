@@ -45,4 +45,10 @@ class AdminProjectController extends Controller
         $data = $this->adminProjectService->updateProject($id, $request);
         return response()->json($data, $data['code']);
     }
+
+    public function getAllProjectProperty(int $id): JsonResponse
+    {
+        $data = $this->adminProjectService->getAllProjectProperty($id);
+        return response()->json($data, $data['code']);
+    }
 }

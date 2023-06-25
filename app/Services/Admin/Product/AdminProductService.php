@@ -9,6 +9,7 @@ use App\Helpers\ResponseHelper;
 use App\Models\Products\Product;
 use App\Models\Projects\Project;
 use App\Validators\ProductValidator;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -26,13 +27,18 @@ class AdminProductService implements AdminProductServiceInterface
     public function getAllProducts(): array
     {
         try {
-            $products = Product::all();
+            // get all products where category_status and sub_category_status is active
+            $products = Product::whereHas('category', function ($query) {
+                $query->where('is_active', 1);
+            })->whereHas('subCategory', function ($query) {
+                $query->where('is_active', 1);
+            })->get();
 
             if (!$products) {
                 return ResponseHelper::notFound('Produk tidak ditemukan');
             }
 
-            $products->load('category', 'subCategory');
+            $products->load('category', 'subCategory', 'staffDetails:staff_id,full_name');
 
             return ResponseHelper::success($products);
         } catch (\Exception $e) {
@@ -119,20 +125,26 @@ class AdminProductService implements AdminProductServiceInterface
             $buildingCondition = $request->input('building_condition');
             $buildingDirection = $request->input('building_direction');
             $electricityCapacity = $request->input('electricity_capacity');
-            $waterSource = $request->input('water_source');
 
             $images = $request->file('images');
             $facilities = $request->input('facilities');
+
+            $slug = Str::slug($title);
+            $isSlugExist = Product::where('slug', $slug)->first();
+            if ($isSlugExist) {
+                $slug = $slug . '-' . $isSlugExist->id + 1;
+            }
 
             $productData = [
                 'staff_id' => $staffId,
                 'categories_id' => $categoryId,
                 'sub_categories_id' => $subCategoryId,
                 'title' => $title,
-                'slug' => Str::slug($title),
+                'slug' => $slug,
                 'address' => $address,
                 'is_sold' => $isSold,
                 'price' => $price,
+                'status' => ProductEntities::STATUS_PUBLISH,
                 'map_url' => $mapUrl,
             ];
 
@@ -149,18 +161,17 @@ class AdminProductService implements AdminProductServiceInterface
                 'building_condition' => $buildingCondition,
                 'building_direction' => $buildingDirection,
                 'electricity_capacity' => $electricityCapacity,
-                'water_source' => $waterSource,
             ];
 
             $product = Product::create($productData);
             $product->detail()->create($productDetailData);
 
+            $productImageFolder = FolderEntities::PRODUCT_FOLDER . $product->id . '/' .
+                FolderEntities::PRODUCT_GALLERY_FOLDER;
+
             foreach ($images as $key => $image) {
-                $file = $image[0];
-                $productImageFolder = FolderEntities::PRODUCT_FOLDER . $product->id . '/' .
-                    FolderEntities::PRODUCT_GALLERY_FOLDER;
                 $filePrefix = 'image-' . $key;
-                $productImagePath = FileHelper::uploadFile($file, $productImageFolder, $filePrefix);
+                $productImagePath = FileHelper::uploadFile($image, $productImageFolder, $filePrefix);
                 $product->images()->create([
                     'path' => $productImagePath,
                     'alt' => 'Gambar ' . $key . ' ' . $title
@@ -169,7 +180,7 @@ class AdminProductService implements AdminProductServiceInterface
 
             foreach ($facilities as $facility) {
                 $product->facility()->create([
-                    'facility' => $facility[0]
+                    'facility' => $facility
                 ]);
             }
 
@@ -178,7 +189,7 @@ class AdminProductService implements AdminProductServiceInterface
 
                 if ($request->hasFile('floor_plan_image')) {
                     $floorPlanImage = $request->file('floor_plan_image');
-                    $floorPlanImagePath = FileHelper::uploadFile($floorPlanImage, 'floor_plan_image', 'floor_plan');
+                    $floorPlanImagePath = FileHelper::uploadFile($floorPlanImage, $productImageFolder, 'floor_plan');
 
                     if (!$floorPlanImagePath) {
                         DB::rollBack();
@@ -206,6 +217,27 @@ class AdminProductService implements AdminProductServiceInterface
             return ResponseHelper::serverError($e->getMessage());
         }
     }
+
+    public function getAllNewPosts(Request $request): array
+    {
+        try {
+            // get all property that have been post in the last 7 days
+            $property = Product::with('category', 'subCategory')
+                ->where('created_at', '>=', Carbon::now()->subDays(7))
+                ->where('status', ProductEntities::STATUS_PUBLISH)
+                ->get();
+
+            if ($property->isEmpty()) {
+                return ResponseHelper::notFound('Tidak ada properti baru');
+            }
+
+            return ResponseHelper::success($property);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError($e->getMessage());
+        }
+
+    }
+
 
     public function updateProduct(int $id, Request $request): array
     {
@@ -238,7 +270,6 @@ class AdminProductService implements AdminProductServiceInterface
             $buildingCondition = $request->input('building_condition');
             $buildingDirection = $request->input('building_direction');
             $electricityCapacity = $request->input('electricity_capacity');
-            $waterSource = $request->input('water_source');
 
             $images = $request->file('images');
             $facilities = $request->input('facilities');
@@ -279,26 +310,18 @@ class AdminProductService implements AdminProductServiceInterface
                 'building_condition' => $buildingCondition ?? $product->detail->building_condition,
                 'building_direction' => $buildingDirection ?? $product->detail->building_direction,
                 'electricity_capacity' => $electricityCapacity ?? $product->detail->electricity_capacity,
-                'water_source' => $waterSource ?? $product->detail->water_source,
             ];
 
             $product->update($productData);
             $product->detail()->update($productDetailData);
 
-            if ($images) {
-                // Delete old images
-                $oldImages = $product->images;
-                foreach ($oldImages as $oldImage) {
-                    FileHelper::deleteFile($oldImage->path);
-                    $oldImage->delete();
-                }
+            $productImageFolder = FolderEntities::PRODUCT_FOLDER . $product->id . '/' .
+                FolderEntities::PRODUCT_GALLERY_FOLDER;
 
+            if ($images !== null) {
                 foreach ($images as $key => $image) {
-                    $file = $image[0];
-                    $productImageFolder = FolderEntities::PRODUCT_FOLDER . $product->id . '/' .
-                        FolderEntities::PRODUCT_GALLERY_FOLDER;
                     $filePrefix = 'image-' . $key;
-                    $productImagePath = FileHelper::uploadFile($file, $productImageFolder, $filePrefix);
+                    $productImagePath = FileHelper::uploadFile($image, $productImageFolder, $filePrefix);
                     $product->images()->create([
                         'path' => $productImagePath,
                         'alt' => 'Gambar ' . $key . ' ' . $title
@@ -306,18 +329,46 @@ class AdminProductService implements AdminProductServiceInterface
                 }
             }
 
-            if ($facilities) {
-                // Delete old facilities
-                $oldFacilities = $product->facility;
-                foreach ($oldFacilities as $oldFacility) {
-                    $oldFacility->delete();
-                }
+            // if $facilities is not null, delete all facilities and create new one
+            if ($facilities !== null) {
+                $product->facility()->delete();
 
                 foreach ($facilities as $facility) {
                     $product->facility()->create([
-                        'facility' => $facility[0]
+                        'facility' => $facility
                     ]);
                 }
+            } else {
+                $product->facility()->delete();
+            }
+
+
+            if ($type === ProductEntities::PRODUCT_PROJECT_TYPE) {
+                $projectId = $request->input('project_id');
+
+                if ($request->hasFile('floor_plan_image')) {
+                    FileHelper::deleteFile($product->detail()->floor_plan_image);
+
+                    $floorPlanImage = $request->file('floor_plan_image');
+                    $floorPlanImagePath = FileHelper::uploadFile($floorPlanImage, $productImageFolder, 'floor_plan');
+
+                    if (!$floorPlanImagePath) {
+                        DB::rollBack();
+                        return ResponseHelper::error('Gagal mengupload gambar denah lantai');
+                    }
+                }
+
+                $project = Project::find($projectId);
+
+                if (!$project) {
+                    return ResponseHelper::notFound('Proyek tidak ditemukan');
+                }
+
+                $project->product()->attach($product->id);
+
+                $product->detail()->update([
+                    'floor_plan_image' => $floorPlanImagePath ?? null
+                ]);
             }
 
             $product->save();
@@ -328,5 +379,61 @@ class AdminProductService implements AdminProductServiceInterface
             DB::rollBack();
             return ResponseHelper::serverError($e->getMessage());
         }
+    }
+
+    public function deleteProductImage(int $id, int $imageId): array
+    {
+        DB::beginTransaction();
+        try {
+            $product = Product::find($id);
+
+            if (!$product) {
+                return ResponseHelper::notFound('Produk tidak ditemukan');
+            }
+
+            $productImage = $product->images()->find($imageId);
+
+            if (!$productImage) {
+                return ResponseHelper::notFound('Gambar produk tidak ditemukan');
+            }
+
+            FileHelper::deleteFile($productImage->path);
+
+            $productImage->delete();
+
+            DB::commit();
+            return ResponseHelper::success(null, 'Gambar produk berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError($e->getMessage());
+        }
+
+    }
+
+    public function deleteProductFacility(int $id, int $facilityId): array
+    {
+        DB::beginTransaction();
+        try {
+            $product = Product::find($id);
+
+            if (!$product) {
+                return ResponseHelper::notFound('Produk tidak ditemukan');
+            }
+
+            $productFacility = $product->facility()->find($facilityId);
+
+            if (!$productFacility) {
+                return ResponseHelper::notFound('Fasilitas produk tidak ditemukan');
+            }
+
+            $productFacility->delete();
+
+            DB::commit();
+            return ResponseHelper::success(null, 'Fasilitas produk berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError($e->getMessage());
+        }
+
     }
 }

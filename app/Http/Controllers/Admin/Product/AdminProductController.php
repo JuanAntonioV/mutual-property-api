@@ -45,4 +45,22 @@ class AdminProductController extends Controller
         $data = $this->adminProductService->updateProduct($id, $request);
         return response()->json($data, $data['code']);
     }
+
+    public function getAllNewPosts(Request $request): JsonResponse
+    {
+        $data = $this->adminProductService->getAllNewPosts($request);
+        return response()->json($data, $data['code']);
+    }
+
+    public function deleteProductImage(int $id, int $imageId): JsonResponse
+    {
+        $data = $this->adminProductService->deleteProductImage($id, $imageId);
+        return response()->json($data, $data['code']);
+    }
+
+    public function deleteProductFacility(int $id, int $facilityId): JsonResponse
+    {
+        $data = $this->adminProductService->deleteProductFacility($id, $facilityId);
+        return response()->json($data, $data['code']);
+    }
 }
