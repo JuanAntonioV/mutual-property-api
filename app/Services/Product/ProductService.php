@@ -162,29 +162,33 @@ class ProductService implements ProductServiceInterface
     public function getProductDetails($request, $slug): array
     {
         try {
-            $typeId = $request->input('type');
-            $productCategory = $this->productRepo->getProductCategory($slug);
-            $productCategoryId = $productCategory->id;
+            $product = Product::with('category', 'subCategory', 'detail', 'facility')
+                ->with(['images' => function ($query) {
+                    $query->where('is_active', 1);
+                }])
+                ->where('slug', $slug)
+                ->first();
 
-            if (!$productCategory) return ResponseHelper::notFound('Produk tidak ditemukan');
+            if (!$product) return ResponseHelper::notFound('Produk tidak ditemukan');
 
-            if ($productCategoryId == CategoryEntities::CATEGORY_DIJUAL || $productCategoryId ==
+            $productCategoryId = $product->categories_id;
+
+
+            if ($productCategoryId === CategoryEntities::CATEGORY_DIJUAL || $productCategoryId ===
                 CategoryEntities::CATEGORY_DISEWA) {
-                $product = $this->productRepo->getProductDetails($slug);
+                $product->load('staff.detail');
 
-                $product->gallery = $this->productRepo->getProductGallery($product->id);
-                $product->facilities = $this->productRepo->getProductFacilities($product->id);
-                $product->marketing = $this->productRepo->getProductMarketing($product->id);
+                $product->is_project_unit = false;
+
+                $product->staff->photo = FileHelper::getFileUrl($product->staff->photo);
             } else {
-                $product = $this->productRepo->getProductDeveloperDetails($slug);
+                $product->load('project');
 
-                $product->gallery = $this->productRepo->getProductGallery($product->id);
+                $product->is_project_unit = true;
+            }
 
-                if ($typeId) {
-                    $product->units = $this->productRepo->getProductDeveloperUnitDetails($typeId);
-                } else {
-                    $product->units = $this->productRepo->getProductDeveloperUnits($product->id, $product->developer_id);
-                }
+            foreach ($product->images as $image) {
+                $image->path = FileHelper::getFileUrl($image->path);
             }
 
             return ResponseHelper::success($product);

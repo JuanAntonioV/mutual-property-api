@@ -3,7 +3,7 @@
 namespace App\Models\Products;
 
 use App\Models\Category\Category;
-use App\Models\Developers\Developer;
+use App\Models\Projects\Project;
 use App\Models\Staffs\Staff;
 use App\Models\Staffs\StaffDetail;
 use App\Models\SubCategory\SubCategory;
@@ -65,7 +65,7 @@ class Product extends Model
 
     public function project(): BelongsToMany
     {
-        return $this->belongsToMany(Developer::class, 'product_project', 'product_id', 'project_id');
+        return $this->belongsToMany(Project::class, 'product_project', 'product_id', 'project_id');
     }
 
     public function staffDetails(): BelongsTo
